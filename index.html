@@ -2,91 +2,541 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Source Alignment Index</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --border: #2e2e2e;
+      --accent: #c8f542;
+      --accent-dim: rgba(200, 245, 66, 0.08);
+      --text: #e8e8e8;
+      --text-muted: #666;
+      --text-dim: #999;
+      --low: #ff5f57;
+      --moderate: #ffbd2e;
+      --strong: #c8f542;
+      --radius: 6px;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+ 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+ 
     body {
-      font-family: Arial, sans-serif;
-      max-width: 780px;
-      margin: 40px auto;
-      line-height: 1.6;
-      padding: 0 20px;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 48px 24px 80px;
     }
-
+ 
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+ 
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 28px;
+      margin-bottom: 40px;
+    }
+ 
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+ 
     h1 {
+      font-size: 26px;
+      font-weight: 300;
       letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 10px;
     }
-
-    textarea, input {
-      width: 100%;
-      margin: 8px 0 18px;
-      padding: 10px;
+ 
+    h1 span {
+      color: var(--accent);
+      font-weight: 500;
+    }
+ 
+    .subtitle {
       font-size: 14px;
-      box-sizing: border-box;
+      color: var(--text-muted);
+      line-height: 1.6;
+      max-width: 520px;
     }
-
-    button {
-      padding: 10px 16px;
+ 
+    .section {
+      margin-bottom: 32px;
+    }
+ 
+    .section-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+ 
+    textarea {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.6;
+      padding: 14px 16px;
+      resize: vertical;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+ 
+    textarea:focus {
+      border-color: var(--accent);
+    }
+ 
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+ 
+    .scores-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+ 
+    .score-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      transition: border-color 0.15s;
+    }
+ 
+    .score-card:focus-within {
+      border-color: var(--accent);
+    }
+ 
+    .score-card label {
+      display: block;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+ 
+    .score-card input[type="number"] {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 28px;
+      font-weight: 500;
+      padding: 4px 0 8px;
+      outline: none;
+      -moz-appearance: textfield;
+    }
+ 
+    .score-card input[type="number"]::-webkit-inner-spin-button,
+    .score-card input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+    }
+ 
+    .score-card input[type="number"]::placeholder {
+      color: var(--border);
+    }
+ 
+    .score-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+ 
+    .range-slider {
+      width: 100%;
+      margin-top: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 2px;
+      background: var(--border);
+      outline: none;
+      border-radius: 2px;
+    }
+ 
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
       cursor: pointer;
     }
-
+ 
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+ 
+    button {
+      font-family: var(--sans);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+ 
+    .btn-primary {
+      background: var(--accent);
+      color: #0f0f0f;
+      flex: 1;
+    }
+ 
+    .btn-primary:hover {
+      background: #d4f760;
+    }
+ 
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+ 
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+ 
+    .btn-secondary:hover {
+      border-color: var(--text-muted);
+      color: var(--text);
+    }
+ 
+    .error-msg {
+      display: none;
+      font-size: 13px;
+      color: var(--low);
+      margin-bottom: 16px;
+      font-family: var(--mono);
+    }
+ 
     .result {
-      margin-top: 24px;
-      padding: 16px;
-      border: 1px solid #ccc;
-      background: #f7f7f7;
+      display: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      animation: fadeIn 0.3s ease;
+    }
+ 
+    .result.visible {
+      display: block;
+    }
+ 
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .result-header {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+ 
+    .result-score {
+      font-family: var(--mono);
+      font-size: 52px;
+      font-weight: 500;
+      line-height: 1;
+    }
+ 
+    .result-label {
+      font-size: 14px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: var(--mono);
+    }
+ 
+    .label-low { background: rgba(255,95,87,0.12); color: var(--low); }
+    .label-moderate { background: rgba(255,189,46,0.12); color: var(--moderate); }
+    .label-strong { background: rgba(200,245,66,0.12); color: var(--strong); }
+ 
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+ 
+    .breakdown-item {
+      background: var(--bg);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+ 
+    .breakdown-item .bi-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+ 
+    .breakdown-item .bi-val {
+      font-family: var(--mono);
+      font-size: 20px;
+      font-weight: 500;
+    }
+ 
+    .result-summary {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+ 
+    .result-summary strong {
+      color: var(--text);
+    }
+ 
+    .bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+ 
+    .bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+ 
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+ 
+    @media (max-width: 560px) {
+      .scores-grid { grid-template-columns: 1fr; }
+      .result-breakdown { grid-template-columns: 1fr; }
+      .result-score { font-size: 40px; }
     }
   </style>
 </head>
 <body>
-
-  <h1>Source Alignment Index</h1>
-
-  <p>
-    Lightweight scoring interface for evaluating source alignment, contextual consistency,
-    and reference coherence across structured analytical inputs.
-  </p>
-
-  <label>Source Material</label>
-  <textarea id="sourceText" rows="4" placeholder="Paste source material or reference text here..."></textarea>
-
-  <label>Derived Output</label>
-  <textarea id="outputText" rows="4" placeholder="Paste summary, claim, generated output, or analyst note here..."></textarea>
-
-  <label>Source Alignment Score: 0–5</label>
-  <input id="alignment" type="number" min="0" max="5" step="0.1">
-
-  <label>Context Consistency Score: 0–5</label>
-  <input id="consistency" type="number" min="0" max="5" step="0.1">
-
-  <label>Reference Coherence Score: 0–5</label>
-  <input id="coherence" type="number" min="0" max="5" step="0.1">
-
-  <button onclick="calculateIndex()">Calculate Alignment Index</button>
-
-  <div class="result" id="result">
-    Index output will appear here.
+  <div class="container">
+ 
+    <header>
+      <div class="tag">v0.1 — Prototype</div>
+      <h1>Source <span>Alignment</span> Index</h1>
+      <p class="subtitle">
+        Lightweight scoring interface for evaluating source alignment, contextual
+        consistency, and reference coherence across structured analytical inputs.
+      </p>
+    </header>
+ 
+    <div class="section">
+      <div class="section-label">Source Material</div>
+      <textarea id="sourceText" rows="4" placeholder="Paste source material or reference text here..."></textarea>
+    </div>
+ 
+    <div class="section">
+      <div class="section-label">Derived Output</div>
+      <textarea id="outputText" rows="4" placeholder="Paste summary, claim, generated output, or analyst note here..."></textarea>
+    </div>
+ 
+    <div class="section-label" style="margin-bottom:16px;">Dimension Scores &nbsp;<span style="color:var(--text-muted);font-size:11px;font-family:var(--mono);">0 – 5</span></div>
+    <div class="scores-grid">
+ 
+      <div class="score-card">
+        <label>Source Alignment</label>
+        <input type="number" id="alignment" min="0" max="5" step="0.1" placeholder="0.0">
+        <input type="range" class="range-slider" id="alignSlider" min="0" max="5" step="0.1" value="0">
+        <div class="score-hint">Consistency with source</div>
+      </div>
+ 
+      <div class="score-card">
+        <label>Context Consistency</label>
+        <input type="number" id="consistency" min="0" max="5" step="0.1" placeholder="0.0">
+        <input type="range" class="range-slider" id="consistSlider" min="0" max="5" step="0.1" value="0">
+        <div class="score-hint">Contextual preservation</div>
+      </div>
+ 
+      <div class="score-card">
+        <label>Reference Coherence</label>
+        <input type="number" id="coherence" min="0" max="5" step="0.1" placeholder="0.0">
+        <input type="range" class="range-slider" id="coherSlider" min="0" max="5" step="0.1" value="0">
+        <div class="score-hint">Reference stability</div>
+      </div>
+ 
+    </div>
+ 
+    <div class="error-msg" id="errorMsg">⚠ Please enter at least one score before calculating.</div>
+ 
+    <div class="actions">
+      <button class="btn-primary" onclick="calculateIndex()">Calculate Alignment Index</button>
+      <button class="btn-secondary" onclick="resetAll()">Reset</button>
+    </div>
+ 
+    <div class="result" id="result">
+      <div class="result-header">
+        <div class="result-score" id="resultScore">—</div>
+        <div class="result-label" id="resultLabel">—</div>
+      </div>
+      <div class="result-breakdown">
+        <div class="breakdown-item">
+          <div class="bi-label">Source Alignment</div>
+          <div class="bi-val" id="bAlignment">—</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="bi-label">Context Consistency</div>
+          <div class="bi-val" id="bConsistency">—</div>
+        </div>
+        <div class="breakdown-item">
+          <div class="bi-label">Reference Coherence</div>
+          <div class="bi-val" id="bCoherence">—</div>
+        </div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-fill" id="barFill" style="width:0%"></div>
+      </div>
+      <div class="result-summary" id="resultSummary"></div>
+    </div>
+ 
+    <footer>
+      <span>source-alignment-index</span>
+      <span>mesimmo-dev</span>
+    </footer>
+ 
   </div>
-
+ 
   <script>
+    // Sync number inputs <-> sliders
+    function syncPair(inputId, sliderId) {
+      const input = document.getElementById(inputId);
+      const slider = document.getElementById(sliderId);
+      input.addEventListener('input', () => {
+        let v = parseFloat(input.value);
+        if (!isNaN(v)) slider.value = Math.min(5, Math.max(0, v));
+      });
+      slider.addEventListener('input', () => {
+        input.value = parseFloat(slider.value).toFixed(1);
+      });
+    }
+    syncPair('alignment', 'alignSlider');
+    syncPair('consistency', 'consistSlider');
+    syncPair('coherence', 'coherSlider');
+ 
     function calculateIndex() {
-      const alignment = parseFloat(document.getElementById("alignment").value) || 0;
-      const consistency = parseFloat(document.getElementById("consistency").value) || 0;
-      const coherence = parseFloat(document.getElementById("coherence").value) || 0;
-
-      const average = ((alignment + consistency + coherence) / 3).toFixed(2);
-
-      let label = "Low alignment";
-      if (average >= 3.5) {
-        label = "Strong alignment";
-      } else if (average >= 2) {
-        label = "Moderate alignment";
+      const aVal = document.getElementById('alignment').value;
+      const cVal = document.getElementById('consistency').value;
+      const rVal = document.getElementById('coherence').value;
+ 
+      const a = parseFloat(aVal);
+      const c = parseFloat(cVal);
+      const r = parseFloat(rVal);
+ 
+      const errorEl = document.getElementById('errorMsg');
+ 
+      // Validation — at least one score must be entered
+      if (aVal === '' && cVal === '' && rVal === '') {
+        errorEl.style.display = 'block';
+        return;
       }
-
-      document.getElementById("result").innerHTML =
-        "<strong>Source Alignment Index:</strong> " + average +
-        "<br><strong>Assessment:</strong> " + label;
+      errorEl.style.display = 'none';
+ 
+      const scores = [
+        isNaN(a) ? null : a,
+        isNaN(c) ? null : c,
+        isNaN(r) ? null : r
+      ].filter(v => v !== null);
+ 
+      const average = (scores.reduce((s, v) => s + v, 0) / scores.length).toFixed(2);
+ 
+      let label, labelClass, color, summary;
+ 
+      if (average >= 3.5) {
+        label = 'Strong alignment';
+        labelClass = 'label-strong';
+        color = 'var(--strong)';
+        summary = 'The derived output demonstrates <strong>strong fidelity</strong> to the source material. Contextual meaning is well-preserved and references are stable.';
+      } else if (average >= 2) {
+        label = 'Moderate alignment';
+        labelClass = 'label-moderate';
+        color = 'var(--moderate)';
+        summary = 'The derived output shows <strong>partial alignment</strong> with the source. Some contextual drift or reference inconsistencies may be present. Review flagged dimensions.';
+      } else {
+        label = 'Low alignment';
+        labelClass = 'label-low';
+        color = 'var(--low)';
+        summary = 'The derived output has <strong>significant divergence</strong> from the source material. Contextual meaning or reference coherence may be substantially compromised.';
+      }
+ 
+      // Populate result
+      document.getElementById('resultScore').textContent = average;
+      const labelEl = document.getElementById('resultLabel');
+      labelEl.textContent = label;
+      labelEl.className = 'result-label ' + labelClass;
+ 
+      document.getElementById('bAlignment').textContent = isNaN(a) ? '—' : a.toFixed(1);
+      document.getElementById('bConsistency').textContent = isNaN(c) ? '—' : c.toFixed(1);
+      document.getElementById('bCoherence').textContent = isNaN(r) ? '—' : r.toFixed(1);
+ 
+      const bar = document.getElementById('barFill');
+      bar.style.width = '0%';
+      bar.style.background = color;
+      setTimeout(() => { bar.style.width = (average / 5 * 100) + '%'; }, 50);
+ 
+      document.getElementById('resultSummary').innerHTML = summary;
+ 
+      const resultEl = document.getElementById('result');
+      resultEl.classList.add('visible');
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+ 
+    function resetAll() {
+      ['alignment','consistency','coherence'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      ['alignSlider','consistSlider','coherSlider'].forEach(id => {
+        document.getElementById(id).value = 0;
+      });
+      document.getElementById('sourceText').value = '';
+      document.getElementById('outputText').value = '';
+      document.getElementById('errorMsg').style.display = 'none';
+      document.getElementById('result').classList.remove('visible');
     }
   </script>
-
 </body>
 </html>
