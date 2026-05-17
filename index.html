@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Source Alignment Index</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 780px;
+      margin: 40px auto;
+      line-height: 1.6;
+      padding: 0 20px;
+    }
+
+    h1 {
+      letter-spacing: -0.5px;
+    }
+
+    textarea, input {
+      width: 100%;
+      margin: 8px 0 18px;
+      padding: 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding: 16px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Source Alignment Index</h1>
+
+  <p>
+    Lightweight scoring interface for evaluating source alignment, contextual consistency,
+    and reference coherence across structured analytical inputs.
+  </p>
+
+  <label>Source Material</label>
+  <textarea id="sourceText" rows="4" placeholder="Paste source material or reference text here..."></textarea>
+
+  <label>Derived Output</label>
+  <textarea id="outputText" rows="4" placeholder="Paste summary, claim, generated output, or analyst note here..."></textarea>
+
+  <label>Source Alignment Score: 0–5</label>
+  <input id="alignment" type="number" min="0" max="5" step="0.1">
+
+  <label>Context Consistency Score: 0–5</label>
+  <input id="consistency" type="number" min="0" max="5" step="0.1">
+
+  <label>Reference Coherence Score: 0–5</label>
+  <input id="coherence" type="number" min="0" max="5" step="0.1">
+
+  <button onclick="calculateIndex()">Calculate Alignment Index</button>
+
+  <div class="result" id="result">
+    Index output will appear here.
+  </div>
+
+  <script>
+    function calculateIndex() {
+      const alignment = parseFloat(document.getElementById("alignment").value) || 0;
+      const consistency = parseFloat(document.getElementById("consistency").value) || 0;
+      const coherence = parseFloat(document.getElementById("coherence").value) || 0;
+
+      const average = ((alignment + consistency + coherence) / 3).toFixed(2);
+
+      let label = "Low alignment";
+      if (average >= 3.5) {
+        label = "Strong alignment";
+      } else if (average >= 2) {
+        label = "Moderate alignment";
+      }
+
+      document.getElementById("result").innerHTML =
+        "<strong>Source Alignment Index:</strong> " + average +
+        "<br><strong>Assessment:</strong> " + label;
+    }
+  </script>
+
+</body>
+</html>
